@@ -3,11 +3,9 @@
 <head>
   <title>lee&gelman2022 replication</title>
   <script src="https://unpkg.com/jspsych@8.0.0"></script>
-  <script src="https://unpkg.com/@jspsych/plugin-html-keyboard-response@2.0.0"></script>
-  <script src="https://unpkg.com/@jspsych/plugin-survey-likert@1.1.3"></script> 
-  <script src="https://unpkg.com/@jspsych/plugin-survey-text@2.1.1"></script>
-  <script src="https://unpkg.com/@jspsych/plugin-survey@4.0.0"></script>
-  <script src="https://unpkg.com/@jspsych/plugin-survey-html-form@1.0.3"></script> 
+<script src="https://unpkg.com/@jspsych/plugin-html-keyboard-response@2.0.0"></script>
+<script src="https://unpkg.com/@jspsych/plugin-survey-html-form@2.0.0"></script>
+<script src="https://unpkg.com/@jspsych/plugin-html-button-response@2.0.0"></script>
 <link rel="stylesheet" href="https://unpkg.com/@jspsych/plugin-survey@4.0.0/css/survey.min.css">
   <!-- the DataPipe extension, which saves our data -->
   <script src="https://unpkg.com/@jspsych/extension-pipe@0.2.0"></script>
@@ -20,7 +18,7 @@
   // initialize jsPsych
   var jsPsych = initJsPsych({
     on_finish: function () {
-      jsPsych.data.displayData();
+      jsPsych.data.displayData(); //remove for the real study
     },
     // send the data to DataPipe
     extensions: [
@@ -42,19 +40,49 @@
   // create timeline
   var timeline = [];
 
-  // define welcome message trial
-  var welcome = {
-    type: jsPsychHtmlKeyboardResponse,
-    stimulus: "Welcome to the experiment. Press any key to begin."
+  // define consent form block
+var consent = {
+    type: jsPsychHtmlButtonResponse,
+    stimulus: `
+    <div style="max-width: 600px; margin: 0 auto; text-align: left;">
+      <h2>Consent for Participation in a Research Study</h2>
+      <p>You are being invited to participate in a research study titled "Reproducibility of Psychological Science and Instruction." This study is being done by Dr. Bria Long from UC San Diego and associated graduate students in Experimental Methods course. You were selected to participate in this study because you are an adult in the U.S. and have been a represented population in previous psychology studies.</p>
+      <p>The purpose of this study is to better understand how well previously published studies in the psychological field replicate online and with different populations. Your participation in this research should last approximately 5-30 minutes  If you agree to take part in this study, you may be asked to view a set of stimuli, including pictures, sounds, written text, or videos and then giving some responses via key-presses, verbally, or with paper-and-pencil. We may also observe your choices or preferences among an array of stimuli.  These stimuli will be taken directly from or closely adapted from studies that already exist in the published psychological literature. Stimuli will include, e.g., pictures of objects and human faces, audio and video clips, short text passages, etc. None of the stimuli will be disturbing, threatening, or offensive. The online and in-person experiments described in this protocol will take no more than 30 minutes. An example game you might play would be to click on an image on the screen that matches a word you hear being said out loud. Your total expected time commitment for this study is between 5-30 minutes, and is specified in the study description.</p>
+      <p>Your participation in this study is completely voluntary and you can withdraw at any time. Choosing not to participate or withdrawing will result in no penalty or loss of benefits to which you are entitled. You are free to skip any question that you choose.</p>
+      <p>We will not be asking for any personally identifying information, and we will handle responses as confidentially as possible. Your SONA or Prolific IDs will never be tied to your responses on this survey. However, we cannot guarantee the confidentiality of information transmitted over the Internet. To minimize this risk, data containing anything that might be personally identifiable (e.g. Prolific IDs or IP addresses) will be encrypted on transfer and storage and will only be accessible to qualified lab personnel. We will be keeping data collected as part of this experiment indefinitely. This anonymized data (containing neither Prolific IDs nor IP addresses) may be shared with the scientific community or with other participants to be used as stimuli in future studies.</p>
+      <p>If you have questions about this project or if you have a research-related problem, you may contact the researcher(s),  Dr. Bria Long, brlong@ucsd.edu. If you have any questions concerning your rights as a research subject, you may contact the UC San Diego Office of IRB Administration at irb@ucsd.edu or 858-246-4777.</p>
+      <p>By participating in this research you are indicating that you are at least 18 years old, have read this consent form, and agree to participate in this research study. Please keep this consent form for your records.</p>
+    </div>
+    `,
+    choices: ['I agree', 'I do not agree']
   };
-  timeline.push(welcome);
+  timeline.push(consent);
+
+  // Define an exit node if they choose 'I do not agree'
+var exit_node = {
+  timeline: [{
+    type: jsPsychHtmlKeyboardResponse,
+    stimulus: '<p>You did not consent to participate. You can now close this window. Thank you!</p>',
+    choices: "NO_KEYS" // Prevents them from proceeding further
+  }],
+  conditional_function: function(){
+    // Get data from the last trial (the consent trial)
+    var last_trial_data = jsPsych.data.get().last(1).values()[0];
+    // 'I do not agree' is the second button, which corresponds to response index 1
+    if(last_trial_data.response === 1){
+      return true; // Run the exit timeline
+    } else {
+      return false; // Skip the exit timeline and continue the experiment
+    }
+  }
+};
+timeline.push(exit_node);
 
   // define the instructions trial (needs to be edited)
   var instructions = {
     type: jsPsychHtmlKeyboardResponse,
     stimulus: `
-      <p>In this experiment, you will see several stories.</p>
-      <p>Please rate how okay or not okay each action is.</p>
+      <p>You will read short stories and will be asked what you think about the behaviors of the characters in the stories.</p>
       <p>Press any key to begin.</p>
     `
   };
@@ -62,107 +90,86 @@
 
   // Define questions items
 var question_items = [
-  { id: 'book_digital', prompt: '<p>Jordan finds that an e-book was saved on a shared computer in the room. Jordan is the only person in the room. No one will know if Jordan downloads the e-book on his laptop. Is it okay or not okay for Jordan to download the e-book? How okay or not okay is it?</p>' },
-  { id: 'photo_digital', prompt: '<p>Peyton finds that a photo of nature was saved on a shared computer in the room. Peyton is the only person in the room. No one will know if Peyton downloads the photo on his laptop. Is it okay or not okay for Peyton to download the photo? How okay or not okay is it?</p>' },
-  { id: 'game_digital', prompt: '<p>Robin finds that a fishing game was saved on a shared computer in the room. Robin is the only person in the room. No one will know if Robin downloads the fishing game on her laptop. Is it okay or not okay for Robin to download the fishing game? How okay or not okay is it?</p>' },
-  { id: 'drawing_nondigital', prompt: '<p>Blake finds that a drawing on a page from a sketchbook was left next to a shared computer in the room. Blake is the only person in the room. No one will know if Blake takes the drawing with her. Is it okay or not okay for Blake to take the drawing? How okay or not okay is it?</p>' },
-  { id: 'music_nondigital', prompt: '<p>Jesse finds that a music CD was left next to a shared computer in the room. Jesse is the only person in the room. No one will know if Jesse takes the music CD with her. Is it okay or not okay for Jesse to take the music CD? How okay or not okay is it?</p>' },
-  { id: 'movie_nondigital', prompt: '<p>Sammy finds that a videotape of a movie was left next to a shared computer in the room. Sammy is the only person in the room. No one will know if Sammy takes the videotape with him. Is it okay or not okay for Sammy to take the videotape? How okay or not okay is it?</p>' }
+  { id: 'book_digital', prompt: '<p>Jordan finds that an e-book was saved on a shared computer in the room.<br>Jordan is the only person in the room.<br>No one will know if Jordan downloads the e-book on his laptop.<br><br>Is it okay or not okay for Jordan to download the e-book?<br>How okay or not okay is it?</p>' },
+  { id: 'photo_digital', prompt: '<p>Peyton finds that a photo of nature was saved on a shared computer in the room.<br>Peyton is the only person in the room.<br>No one will know if Peyton downloads the photo on his laptop.<br><br>Is it okay or not okay for Peyton to download the photo?<br>How okay or not okay is it?</p>' },
+  { id: 'game_digital', prompt: '<p>Robin finds that a fishing game was saved on a shared computer in the room.<br>Robin is the only person in the room.<br>No one will know if Robin downloads the fishing game on her laptop.<br><br>Is it okay or not okay for Robin to download the fishing game?<br>How okay or not okay is it?</p>' },
+  { id: 'music_digital', prompt: '<p>Jesse finds that a music file was saved on a shared computer in the room.<br>Jesse is the only person in the room.<br>No one will know if Jesse downloads the music file on her laptop.<br><br>Is it okay or not okay for Jesse to download the music file? How okay or not okay is it?</p>' },
+  { id: 'movie_digital', prompt: '<p>Sammy finds that a movie file was saved on a shared computer in the room.<br>Sammy is the only person in the room.<br>No one will know if Sammy downloads the movie file on his laptop.<br><br>Is it okay or not okay for Sammy to download the movie file?<br>How okay or not okay is it?</p>' },
+  { id: 'drawing_digital', prompt: '<p>Blake finds that a drawing was saved on a shared computer in the room.<br>Blake is the only person in the room.<br>No one will know if Blake downloads the drawing to her laptop.<br><br>Is it okay or not okay for Blake to download the drawing?<br>How okay or not okay is it?</p>' },
+  { id: 'drawing_nondigital', prompt: '<p>Blake finds that a drawing on a page from a sketchbook was left next to a shared computer in the room.<br>Blake is the only person in the room.<br>No one will know if Blake takes the drawing with her.<br><br>Is it okay or not okay for Blake to take the drawing?<br>How okay or not okay is it?</p>' },
+  { id: 'music_nondigital', prompt: '<p>Jesse finds that a music CD was left next to a shared computer in the room.<br>Jesse is the only person in the room.<br>No one will know if Jesse takes the music CD with her.<br><br>Is it okay or not okay for Jesse to take the music CD?<br>How okay or not okay is it?</p>' },
+  { id: 'movie_nondigital', prompt: '<p>Sammy finds that a videotape of a movie was left next to a shared computer in the room.<br>Sammy is the only person in the room.<br>No one will know if Sammy takes the videotape with him.<br><br>Is it okay or not okay for Sammy to take the videotape?<br>How okay or not okay is it?</p>' },
+  { id: 'book_nondigital', prompt: '<p>Jordan finds that a book was left next to a shared computer in the room.<br>Jordan is the only person in the room.<br>No one will know if Jordan takes the book with him.<br><br>Is it okay or not okay for Jordan to take the book?<br>How okay or not okay is it?</p>' },
+  { id: 'photo_nondigital', prompt: '<p>Peyton finds that a photo of nature was left next to a shared computer in the room.<br>Peyton is the only person in the room.<br>No one will know if Peyton puts the photo in his bag.<br><br>Is it okay or not okay for Peyton to put the photo in his bag?<br>How okay or not okay is it?</p>' },
+  { id: 'game_nondigital', prompt: '<p>Robin finds that a plastic fishing game was left next to a shared computer in the room.<br>Robin is the only person in the room.<br>No one will know if Robin takes the plastic fishing game with her.<br><br>Is it okay or not okay for Robin to take the plastic fishing game?<br>How okay or not okay is it?</p>' }
 ];
 
-// Shuffle the question items
-var shuffledQuestions = jsPsych.randomization.shuffle(question_items);
-
-// Map each item to a survey-html-form trial
-var surveyTimeline = shuffledQuestions.map(function(item) {
-  return {
-    type: jsPsychSurveyHtmlForm,
-    preamble: `
-    <style>
-        .preamble {
-            font-size: 18px;
-            line-height: 1.5;
-            text-align: center;       /* Centers text inside the container */
-            max-width: 60%;           /* Reduces content width to create larger side margins */
-            margin: 40px auto;        /* Adds vertical margin (40px) and centers horizontally (auto) */
-            padding: 20px;            /* Adds inner spacing if needed */
-        }
-    </style>
-    <div class="preamble">
-      <p>${item.prompt}</p>
-    </div>`,
-    html: `
-     <!-- Custom CSS to control the button layouts -->
-    <style>
-      .likert-container {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        max-width: 600px;
-        margin: 30px auto;
-      }
-      .likert-option {
-        display: flex;
-        flex-direction: column; /* Stacks the button over the text */
-        align-items: center;    /* Centers the button horizontally over the text */
-        cursor: pointer;
-        width: 80px;            /* Gives spacing room for labels */
-      }
-      .likert-option input {
-        margin-bottom: 8px;     /* Space between the button and the text underneath */
-        cursor: pointer;
-      }
-      .likert-label {
-        font-size: 14px;
-        text-align: center;
-        line-height: 1.2;
-      }
-    </style>
-
-    <!-- The Flexbox Form container --> 
-    <div class="likert-container">
-      
-      <label class="likert-option">
-        <input type="radio" name="okayness" value="-2" required />
-        <span class="likert-label">Totally not okay</span>
-      </label>
-
-      <label class="likert-option">
-        <input type="radio" name="okayness" value="-1" required/>
-        <span class="likert-label">Not okay</span>
-      </label>
-
-      <label class="likert-option">
-        <input type="radio" name="okayness" value="0" required/>
-        <span class="likert-label">In between</span>
-      </label>
-
-      <label class="likert-option">
-        <input type="radio" name="okayness" value="1" required/>
-        <span class="likert-label">Okay</span>
-      </label>
-
-      <label class="likert-option">
-        <input type="radio" name="okayness" value="2" required />
-        <span class="likert-label">Totally okay</span>
-      </label>
-
-      </div>
-      <div>
-        <label for="${item.id}_open">What made you think so? Describe your reason below.</label><br>
-        <textarea name="${item.id}_open" rows="3" cols="40" required></textarea>
-      </div>
-    `,
-    button_label: 'Next'
+// Define conditions
+ var conditions = {
+    condition_1: ['book_digital','movie_nondigital','photo_digital','drawing_nondigital','game_digital','music_nondigital'],
+    condition_2: ['book_nondigital','movie_digital','photo_nondigital','drawing_digital','game_nondigital','music_digital'],
+    condition_3: ['book_digital','movie_digital','photo_digital','drawing_nondigital','game_nondigital','music_nondigital'],
+    condition_4: ['book_nondigital','movie_nondigital','photo_nondigital','drawing_digital','game_digital','music_digital'],
+    condition_5: ['book_digital','movie_digital','photo_nondigital','drawing_nondigital','game_digital','music_nondigital'],
+    condition_6: ['book_nondigital','movie_nondigital','photo_digital','drawing_digital','game_nondigital','music_digital']
   };
-});
 
-// 4. Push to main timeline
-timeline.push(surveyTimeline);
+ //assign a condition randomly
+ var condition_assignment = jsPsych.randomization.sampleWithoutReplacement(Object.keys(conditions), 1)[0];
+  console.log(condition_assignment);
+  jsPsych.data.addProperties({ subject_id: subject_id, condition: condition_assignment });
+
+
+  // look up this participant's 6 items, then randomize their order
+  var shuffledQuestions = jsPsych.randomization.shuffle(
+    conditions[condition_assignment].map(function (id) {
+      return question_items.find(function (q) { return q.id === id; });
+    })
+  );
+
+  // build one trial per item
+  var trials = shuffledQuestions.map(function (item) {
+    return {
+      type: jsPsychSurveyHtmlForm,
+      data: {
+        item_id: item.id,
+        item_format: item.id.split('_')[1] // "digital" / "nondigital"
+      },
+      preamble: `
+        <style>
+          .preamble { font-size: 18px; line-height: 1.5; text-align: center;
+                      max-width: 100%; margin: 40px auto; padding: 20px; }
+        </style>
+        <div class="preamble"><p>${item.prompt}</p></div>`,
+      html: `
+        <style>
+          .likert-container { display: flex; justify-content: space-between; align-items: center;
+                              max-width: 600px; margin: 30px auto; }
+          .likert-option { display: flex; flex-direction: column; align-items: center;
+                           cursor: pointer; width: 80px; }
+          .likert-option input { margin-bottom: 8px; cursor: pointer; }
+          .likert-label { font-size: 14px; text-align: center; line-height: 1.2; }
+        </style>
+        <div class="likert-container">
+          <label class="likert-option"><input type="radio" name="okayness" value="-2" required /><span class="likert-label">Totally not okay</span></label>
+          <label class="likert-option"><input type="radio" name="okayness" value="-1" required /><span class="likert-label">Not okay</span></label>
+          <label class="likert-option"><input type="radio" name="okayness" value="0" required /><span class="likert-label">Neutral</span></label>
+          <label class="likert-option"><input type="radio" name="okayness" value="1" required /><span class="likert-label">Okay</span></label>
+          <label class="likert-option"><input type="radio" name="okayness" value="2" required /><span class="likert-label">Totally okay</span></label>
+        </div>
+        <div>
+          <label for="open_response">What made you think so? Describe your reason below.</label><br>
+          <textarea id="open_response" name="open_response" rows="3" cols="40" required></textarea>
+        </div>`,
+      button_label: 'Next'
+    };
+  });
+
+  timeline.push(...trials);
+
 
  // start the experiment
  jsPsych.run(timeline);
 
  </script>
 </html>
-
