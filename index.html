@@ -169,7 +169,7 @@ var question_items = [
 
   //add in exploratory vignettes - randomize order of the four new vignettes (2 digital, 2 nondigital, counterbalance)
   var exploratory_stimuli = [
-    { id: 'photo_kid_digital', prompt: '<p>Theo finds that a photo of a child was saved on a shared computer in the room.<br>Theo is the only person in the room.<br>No one will know if Theo downloads the e-book on his laptop.<br><br>Is it okay or not okay for Theo to download the e-book?<br>How okay or not okay is it?</p>' },
+    { id: 'photo_kid_digital', prompt: '<p>Theo finds that a photo of a child was saved on a shared computer in the room.<br>Theo is the only person in the room.<br>No one will know if Theo downloads the photo on his laptop.<br><br>Is it okay or not okay for Theo to download the photo?<br>How okay or not okay is it?</p>' },
     { id: 'photo_adult_digital', prompt: '<p>Charlie finds that a photo of an adult was saved on a shared computer in the room.<br>Charlie is the only person in the room.<br>No one will know if Charlie downloads the photo on his laptop.<br><br>Is it okay or not okay for Charlie to download the photo?<br>How okay or not okay is it?</p>' },
     { id: 'photo_kid_nondigital', prompt: '<p>Theo finds that a photo of a child was left next to a shared computer in the room.<br>Theo is the only person in the room.<br>No one will know if Theo puts the photo in his bag.<br><br>Is it okay or not okay for Theo to put the photo in his bag?<br>How okay or not okay is it?</p>' },
     { id: 'photo_adult_nondigital', prompt: '<p>Charlie finds that a photo of an adult was left next to a shared computer in the room.<br>Charlie is the only person in the room.<br>No one will know if Charlie puts the photo in his bag.<br><br>Is it okay or not okay for Charlie to put the photo in his bag?<br>How okay or not okay is it?</p>' }
@@ -184,7 +184,7 @@ var question_items = [
  //assign a condition randomly
  var exploratory_condition_assignment = jsPsych.randomization.sampleWithoutReplacement(Object.keys(exploratory_conditions), 1)[0];
   console.log(exploratory_condition_assignment);
-  jsPsych.data.addProperties({ subject_id: subject_id, condition: exploratory_condition_assignment });
+  jsPsych.data.addProperties({ subject_id: subject_id, expl_condition: exploratory_condition_assignment });
 
 
   // look up this participant's 2 items, then randomize their order
