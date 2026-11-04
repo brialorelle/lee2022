@@ -17,9 +17,6 @@
 
   // initialize jsPsych
   var jsPsych = initJsPsych({
-    on_finish: function () {
-      jsPsych.data.displayData(); //remove for the real study
-    },
     // send the data to DataPipe
     extensions: [
       {
@@ -133,7 +130,8 @@ var question_items = [
       type: jsPsychSurveyHtmlForm,
       data: {
         item_id: item.id,
-        item_format: item.id.split('_')[1] // "digital" / "nondigital"
+        format_type: item.id.split('_')[1], // format
+        item: item.id.split('_')[0], // item
       },
       preamble: `
         <style>
@@ -169,16 +167,16 @@ var question_items = [
 
   //add in exploratory vignettes - randomize order of the four new vignettes (2 digital, 2 nondigital, counterbalance)
   var exploratory_stimuli = [
-    { id: 'photo_kid_digital', prompt: '<p>Theo finds that a photo of a child was saved on a shared computer in the room.<br>Theo is the only person in the room.<br>No one will know if Theo downloads the photo on his laptop.<br><br>Is it okay or not okay for Theo to download the photo?<br>How okay or not okay is it?</p>' },
-    { id: 'photo_adult_digital', prompt: '<p>Charlie finds that a photo of an adult was saved on a shared computer in the room.<br>Charlie is the only person in the room.<br>No one will know if Charlie downloads the photo on his laptop.<br><br>Is it okay or not okay for Charlie to download the photo?<br>How okay or not okay is it?</p>' },
-    { id: 'photo_kid_nondigital', prompt: '<p>Theo finds that a photo of a child was left next to a shared computer in the room.<br>Theo is the only person in the room.<br>No one will know if Theo puts the photo in his bag.<br><br>Is it okay or not okay for Theo to put the photo in his bag?<br>How okay or not okay is it?</p>' },
-    { id: 'photo_adult_nondigital', prompt: '<p>Charlie finds that a photo of an adult was left next to a shared computer in the room.<br>Charlie is the only person in the room.<br>No one will know if Charlie puts the photo in his bag.<br><br>Is it okay or not okay for Charlie to put the photo in his bag?<br>How okay or not okay is it?</p>' }
+    { id: 'kidphoto_digital', prompt: '<p>Theo finds that a photo of a child was saved on a shared computer in the room.<br>Theo is the only person in the room.<br>No one will know if Theo downloads the photo on his laptop.<br><br>Is it okay or not okay for Theo to download the photo?<br>How okay or not okay is it?</p>' },
+    { id: 'adultphoto_digital', prompt: '<p>Charlie finds that a photo of an adult was saved on a shared computer in the room.<br>Charlie is the only person in the room.<br>No one will know if Charlie downloads the photo on his laptop.<br><br>Is it okay or not okay for Charlie to download the photo?<br>How okay or not okay is it?</p>' },
+    { id: 'kidphoto_nondigital', prompt: '<p>Theo finds that a photo of a child was left next to a shared computer in the room.<br>Theo is the only person in the room.<br>No one will know if Theo puts the photo in his bag.<br><br>Is it okay or not okay for Theo to put the photo in his bag?<br>How okay or not okay is it?</p>' },
+    { id: 'adultphoto_nondigital', prompt: '<p>Charlie finds that a photo of an adult was left next to a shared computer in the room.<br>Charlie is the only person in the room.<br>No one will know if Charlie puts the photo in his bag.<br><br>Is it okay or not okay for Charlie to put the photo in his bag?<br>How okay or not okay is it?</p>' }
   ];
 
 // Define conditions
  var exploratory_conditions = {
-    expl_condition_1: ['photo_kid_digital','photo_adult_nondigital'],
-    expl_condition_2: ['photo_kid_nondigital','photo_adult_digital'],
+    expl_condition_1: ['kidphoto_digital','adultphoto_nondigital'],
+    expl_condition_2: ['kidphoto_nondigital','adultphoto_digital'],
   };
 
  //assign a condition randomly
@@ -200,7 +198,8 @@ var question_items = [
       type: jsPsychSurveyHtmlForm,
       data: {
         item_id: item.id,
-        item_format: item.id.split('_')[1] // "digital" / "nondigital"
+        format_type: item.id.split('_')[1], // format
+        item: item.id.split('_')[0], // item
       },
       preamble: `
         <style>
@@ -233,6 +232,26 @@ var question_items = [
   });
 
   timeline.push(exploratory_trials);
+
+  // define debrief trial
+  var debrief = {
+    type: jsPsychHtmlKeyboardResponse,
+    stimulus: `
+      <div style="max-width: 600px; margin: 0 auto; text-align: left;">
+      <h1>Thank you for participating in this study!</h1>
+      <p> You participated in a study that replicated a psychological study exploring adults' moral judgments regarding ownership over digital properties.</p>
+       <p>Why are we interested in this? Digital properties are prevalent in every day of our life.</p>
+    <p> Traditional ownership involves ones right to use tangible properties in an exclusive manner. Recently, the notion of ownership has been extended to intangible entities in the digital world where creators have ownership over digital properties such as music, movies, video games, and software. </p>
+    <p>However, not everyone grasps ownership over digital properties (i.e., digital copyrights). For instance, people commonly distribute or consume digital properties without permission. It is likely that adults do not treat the violation of digital ownership as serious as the violation of traditional ownership.</p> 
+    <p> This study is designed to explore how adults and children evaluate the violation of digital ownership. </p>
+    <p>We hope that this research will lead to a greater understanding of how people reason about digital properties and how their understanding of ownership over digital properties develops. Eventually, knowing more about this may impact how we talk about the right way to create and consume intellectual properties in the digital world.</p>
+    <p> If you have any questions about this study, please feel free to contact the research team: Dr. Bria Long (brlong@ucsd.edu) or Mikka Hoffman (m5hoffman@ucsd.edu). If you have questions about your rights as a research subject, you may contact the UC San Diego Office of IRB Administration at IRB@ucsd.edu. </p>
+    <p>Thank you for your time and participation!</p>
+      <p>Press any key to complete the experiment.</p>
+    </div>
+    `
+  };
+  timeline.push(debrief);
 
  // start the experiment
  jsPsych.run(timeline);

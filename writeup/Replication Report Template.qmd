@@ -58,7 +58,7 @@ After providing informed consent, participants will see eight stories presented 
 
 <!-- Can also quote directly, though it is less often spelled out effectively for an analysis strategy section. The key is to report an analysis strategy that is as close to the original - data cleaning rules, data exclusion rules, covariates, etc. - as possible. --> 
 
-Following the exclusion criteria from the original study, participants will be excluded if they do not complete all types of scenarios, or if their IP address is not based in the U.S. 
+Following the exclusion criteria from the original study, participants will be excluded if they do not complete all types of scenarios. 
 
 "Answers to open-ended questions from all 60 adult participants were also coded by two independent coders" - in this study, open-ended questions will likely be coded by one coder (me) due to resource constraints. "We predetermined the categories for coding explanations based on pilot testing with adults." Coding categories are specified in Table 1 of the original paper and will be used to code open-ended questions in this study. 
 
@@ -70,7 +70,7 @@ Raw data will be cleaned to remove identifiable and irrelevant data and will yie
 
 To replicate the original analyses, these analyses will be run just on the original 6 vignettes. 
 
-Additional analyses: I will also conduct follow-up one-sample t tests (two-tailed) "to examine whether ratings differed significantly from a neutral valence of 0." I also will analyze the justifications provided using the plan detailed above. I will also repeat the analyses detailed above with the full 8 vignettes to explore the effect of the two new vignettes. 
+Additional analyses: I will also conduct follow-up one-sample t-tests (two-tailed) "to examine whether ratings differed significantly from a neutral valence of 0." I also will analyze the justifications provided using the plan detailed above. I will also repeat the analyses detailed above with the full 8 vignettes to explore the effect of the two new vignettes. 
 
 ### Differences from Original Study
 
@@ -78,7 +78,7 @@ Additional analyses: I will also conduct follow-up one-sample t tests (two-taile
 
 Differences in sample: The original sample was collected from adults ("M = 37.7 years, range = 24–66; 23 female and 37 male") on Amazon Mechanical Turk in 2019. This sample will be collected from undergraduate adults in 2026. Likely these samples will be different, as the age range of my sample will likely be narrower and younger, and there may be generational differences between these two samples. Their experiences with technology may be different, potentially leading to differences in their responses. 
 
-Differences in procedure: The original experiment was presented, randomized, and collected via Qualtrics. In this study, I will present, randomize, and collect data via a JsPsych experiment that I code. While I do not anticipate this creating meaningful differences in participants' experiences, there may be differences in things such as font size, scale presentation, etc. As it is unclear if adults saw the same thumbs up/thumbs down Likert scale that children did, it is possible that my Likert scale presentation will differ from the original procedure. An additional difference is that participants will see two new vignettes following the original procedure. 
+Differences in procedure: The original experiment was presented, randomized, and collected via Qualtrics. In this study, I will present, randomize, and collect data via a JsPsych experiment that I code. While I do not anticipate this creating meaningful differences in participants' experiences, there may be differences in things such as font size, scale presentation, etc. An additional difference is that participants will see two new vignettes following the original procedure. 
 
 Differences in analysis plan: Although I am following the analysis plan laid out in the original study, it is possible that this analysis plan will introduce differences in my data. Specifically, as the original study was collected before generative AI tools were widely used, they did not account for screening out potentially AI generated answers in their data cleaning. By using their methods, I similarly will not be screening out potential AI answers - this could introduce poor-quality data into my sample. However, I think that potential AI data is less likely to be present on SONA, so I feel comfortable not including robust AI checks in my procedure. 
 
@@ -149,6 +149,119 @@ Copied from original paper's analyses:
 ### Exploratory analyses
 
 Any follow-up analyses desired (not required).
+
+```{r}
+# do ratings differ from neutral? 
+#doca.adult.digital <- subset(doca.adult, format.type == "Digital")
+#doca.adult.nondigital <- subset(doca.adult, format.type == "Non-digital")
+
+#t.test(doca.adult.digital$response, mu=0)
+#t.test(doca.adult.nondigital$response, mu=0)
+```
+
+```{r}
+# Adult: Do their explanations differ by format type?
+#doca.adult.why.full <- glmmTMB(coding ~ category*format.type + (1|subjectid), 
+ #                                       family = binomial, data = doca.adult.why, na.action = na.exclude)
+
+#doca.adult.why.null <- glmmTMB(coding ~ (1|subjectid), 
+ #                                       family = binomial, data = doca.adult.why, na.action = na.exclude)
+
+  #  anova(doca.adult.why.full, doca.adult.why.null, test="LRT") 
+   # drop1(doca.adult.why.full, test="Chisq")
+
+## Unpack the interaction between Category and Format Type
+    ## ownership
+  #  doca.adult.why.ownership <- subset(doca.adult.why, category == "Ownership")
+   # doca.adult.why.ownership.full <- glmmTMB(coding ~ format.type + (1|subjectid), 
+  #                                           family = binomial, data = doca.adult.why.ownership)
+    
+  #  doca.adult.why.ownership.null <- glmmTMB(coding ~ (1|subjectid), 
+   #                                          family = binomial, data = doca.adult.why.ownership)
+   
+    #anova(doca.adult.why.ownership.full, doca.adult.why.ownership.null, test="LRT") 
+  #  summary(doca.adult.why.ownership.full)
+
+    ## legality
+   # doca.adult.why.legality <- subset(doca.adult.why, category == "Legality")
+   # doca.adult.why.legality.full <- glmmTMB(coding ~ format.type + (1|subjectid), 
+   #                                         family = binomial, data = doca.adult.why.legality)
+    
+    #doca.adult.why.legality.null <- glmmTMB(coding ~ (1|subjectid), 
+     #                                       family = binomial, data = doca.adult.why.legality)
+    
+   #   anova(doca.adult.why.legality.full, doca.adult.why.legality.null, test="LRT") 
+    #  summary(doca.adult.why.legality.full)
+
+    ## morality
+  #  doca.adult.why.morality <- subset(doca.adult.why, category == "Morality")
+   # doca.adult.why.morality.full <- glmmTMB(coding ~ format.type + (1|subjectid), 
+    #                                        family = binomial, data = doca.adult.why.morality)
+    
+    #doca.adult.why.morality.null <- glmmTMB(coding ~ (1|subjectid), 
+     #                                       family = binomial, data = doca.adult.why.morality)
+    
+      #anova(doca.adult.why.morality.full, doca.adult.why.morality.null, test="LRT") 
+
+    ## harmlessness
+#    doca.adult.why.harm <- subset(doca.adult.why, category == "Harm")
+#    doca.adult.why.harm.full <- glmmTMB(coding ~ format.type + (1|subjectid), 
+#                                        family = binomial, data = doca.adult.why.harm) # model does not converge
+    
+    ## duplicability
+#    doca.adult.why.duplicability <- subset(doca.adult.why, category == "Duplicability")
+#    doca.adult.why.duplicability.full <- glmmTMB(coding ~ format.type + (1|subjectid), 
+#                                                 family = binomial, data = doca.adult.why.duplicability)
+    
+#    doca.adult.why.duplicability.null <- glmmTMB(coding ~ (1|subjectid), 
+#                                                 family = binomial, data = doca.adult.why.duplicability)
+    
+#      anova(doca.adult.why.duplicability.full, doca.adult.why.duplicability.null, test="LRT")
+#      summary(doca.adult.why.duplicability.full)
+      
+    ## public nature
+#    doca.adult.why.public <- subset(doca.adult.why, category == "Public")
+#    doca.adult.why.public.full <- glmmTMB(coding ~ format.type + (1|subjectid), 
+#                                                   family = binomial, data = doca.adult.why.public)
+    
+#    doca.adult.why.public.null <- glmmTMB(coding ~ (1|subjectid), 
+#                                          family = binomial, data = doca.adult.why.public)
+    
+#      anova(doca.adult.why.public.full, doca.adult.why.public.null, test="LRT")
+#      summary(doca.adult.why.public.full)
+      
+    ## item value
+#    doca.adult.why.itemvalue <- subset(doca.adult.why, category == "ItemValue")
+#    doca.adult.why.itemvalue.full <- glmmTMB(coding ~ format.type + (1|subjectid), 
+#                                             family = binomial, data = doca.adult.why.itemvalue)
+    
+#    doca.adult.why.itemvalue.null <- glmmTMB(coding ~ (1|subjectid), 
+#                                            family = binomial, data = doca.adult.why.itemvalue)
+    
+#      anova(doca.adult.why.itemvalue.full, doca.adult.why.itemvalue.null, test="LRT")
+      
+    ## possibility of being caught
+#    doca.adult.why.caught <- subset(doca.adult.why, category == "Caught")
+#    doca.adult.why.caught.full <- glmmTMB(coding ~ format.type + (1|subjectid), 
+#                                          family = binomial, data = doca.adult.why.caught)
+    
+#    doca.adult.why.caught.null <- glmmTMB(coding ~ (1|subjectid), 
+#                                          family = binomial, data = doca.adult.why.caught)
+    
+#      anova(doca.adult.why.caught.full, doca.adult.why.caught.null, test="LRT")
+
+    ## conditional response
+#    doca.adult.why.conditional <- subset(doca.adult.why, category == "Conditional")
+#    doca.adult.why.conditional.full <- glmmTMB(coding ~ format.type + (1|subjectid), 
+#                                               family = binomial, data = doca.adult.why.conditional)
+    
+#    doca.adult.why.conditional.null <- glmmTMB(coding ~ (1|subjectid), 
+#                                               family = binomial, data = doca.adult.why.conditional)
+    
+#      anova(doca.adult.why.conditional.full, doca.adult.why.conditional.null, test="LRT")
+#      summary(doca.adult.why.conditional.full)
+```
+
 
 ## Discussion
 
