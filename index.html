@@ -159,7 +159,12 @@ var question_items = [
           <label for="open_response">What made you think so? Describe your reason below.</label><br>
           <textarea id="open_response" name="open_response" rows="3" cols="40" required></textarea>
         </div>`,
-      button_label: 'Next'
+      button_label: 'Next',
+      on_finish: function(data) {
+        //separate responses into rating and open response
+    data.response = data.response.okayness;
+    data.justification = data.response.open_response;
+  }
     };
   });
 
