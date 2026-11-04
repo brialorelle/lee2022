@@ -167,6 +167,72 @@ var question_items = [
 
   timeline.push(...trials);
 
+  //add in exploratory vignettes - randomize order of the four new vignettes (2 digital, 2 nondigital, counterbalance)
+  var exploratory_stimuli = [
+    { id: 'photo_kid_digital', prompt: '<p>Theo finds that a photo of a child was saved on a shared computer in the room.<br>Theo is the only person in the room.<br>No one will know if Theo downloads the e-book on his laptop.<br><br>Is it okay or not okay for Theo to download the e-book?<br>How okay or not okay is it?</p>' },
+    { id: 'photo_adult_digital', prompt: '<p>Charlie finds that a photo of an adult was saved on a shared computer in the room.<br>Charlie is the only person in the room.<br>No one will know if Charlie downloads the photo on his laptop.<br><br>Is it okay or not okay for Charlie to download the photo?<br>How okay or not okay is it?</p>' },
+    { id: 'photo_kid_nondigital', prompt: '<p>Theo finds that a photo of a child was left next to a shared computer in the room.<br>Theo is the only person in the room.<br>No one will know if Theo puts the photo in his bag.<br><br>Is it okay or not okay for Theo to put the photo in his bag?<br>How okay or not okay is it?</p>' },
+    { id: 'photo_adult_nondigital', prompt: '<p>Charlie finds that a photo of an adult was left next to a shared computer in the room.<br>Charlie is the only person in the room.<br>No one will know if Charlie puts the photo in his bag.<br><br>Is it okay or not okay for Charlie to put the photo in his bag?<br>How okay or not okay is it?</p>' }
+  ];
+
+// Define conditions
+ var exploratory_conditions = {
+    expl_condition_1: ['photo_kid_digital','photo_adult_nondigital'],
+    expl_condition_2: ['photo_kid_nondigital','photo_adult_digital'],
+  };
+
+ //assign a condition randomly
+ var exploratory_condition_assignment = jsPsych.randomization.sampleWithoutReplacement(Object.keys(exploratory_conditions), 1)[0];
+  console.log(exploratory_condition_assignment);
+  jsPsych.data.addProperties({ subject_id: subject_id, condition: exploratory_condition_assignment });
+
+
+  // look up this participant's 2 items, then randomize their order
+  var exploratory_shuffledQuestions = jsPsych.randomization.shuffle(
+    exploratory_conditions[exploratory_condition_assignment].map(function (id) {
+      return exploratory_stimuli.find(function (q) { return q.id === id; });
+    })
+  );
+
+  // build one trial per item
+  var exploratory_trials = exploratory_shuffledQuestions.map(function (item) {
+    return {
+      type: jsPsychSurveyHtmlForm,
+      data: {
+        item_id: item.id,
+        item_format: item.id.split('_')[1] // "digital" / "nondigital"
+      },
+      preamble: `
+        <style>
+          .preamble { font-size: 18px; line-height: 1.5; text-align: center;
+                      max-width: 100%; margin: 40px auto; padding: 20px; }
+        </style>
+        <div class="preamble"><p>${item.prompt}</p></div>`,
+      html: `
+        <style>
+          .likert-container { display: flex; justify-content: space-between; align-items: center;
+                              max-width: 600px; margin: 30px auto; }
+          .likert-option { display: flex; flex-direction: column; align-items: center;
+                           cursor: pointer; width: 80px; }
+          .likert-option input { margin-bottom: 8px; cursor: pointer; }
+          .likert-label { font-size: 14px; text-align: center; line-height: 1.2; }
+        </style>
+        <div class="likert-container">
+          <label class="likert-option"><input type="radio" name="okayness" value="-2" required /><span class="likert-label">Totally not okay</span></label>
+          <label class="likert-option"><input type="radio" name="okayness" value="-1" required /><span class="likert-label">Not okay</span></label>
+          <label class="likert-option"><input type="radio" name="okayness" value="0" required /><span class="likert-label">Neutral</span></label>
+          <label class="likert-option"><input type="radio" name="okayness" value="1" required /><span class="likert-label">Okay</span></label>
+          <label class="likert-option"><input type="radio" name="okayness" value="2" required /><span class="likert-label">Totally okay</span></label>
+        </div>
+        <div>
+          <label for="open_response">What made you think so? Describe your reason below.</label><br>
+          <textarea id="open_response" name="open_response" rows="3" cols="40" required></textarea>
+        </div>`,
+      button_label: 'Next'
+    };
+  });
+
+  timeline.push(exploratory_trials);
 
  // start the experiment
  jsPsych.run(timeline);
