@@ -32,7 +32,7 @@ Link to repository: <https://github.com/mikkahoffman/lee2022.git> Link to paper:
 
 ### Power Analysis
 
-At the instructors' recommendation, I calculated the original effect size for the one-sampled t-test comparing adult non-digital ratings to a neutral valence of 0. The calculated effect size was d = -1.64 (CI: \[-2.03, -1.25\]). Using this effect size, I calculated that original experiment had 100% power. I thus decided to use the original sample size of N=60 for my replication.
+At the instructors' recommendation, I calculated the original effect size for the one-sampled t-test comparing adult non-digital ratings to a neutral valence of 0. The calculated effect size was d = -1.64 (95% CI \[-2.03, -1.25\]). Using this effect size, I calculated that original experiment had 100% power. I thus decided to use the original sample size of N=60 for my replication.
 ```{r}
 library(pwr)
 pwr.t.test(d = -1.64, n = 60, type = "one.sample")$power
@@ -50,13 +50,15 @@ The planned sample size is 60 adult participants. As the sample will be collecte
 
 "Adults read six scenarios in total (music, movie, book, photo of nature, drawing, and game) in orders randomized by Qualtrics, with three items presented in a digital format and the other three items presented in a physical format. In addition, the types of items shown in a digital versus physical format were counterbalanced." For example, for digital format scenarios, participants will read, "\[X\] finds that a book was saved on a shared computer in the room. \[X\] is the only person in the room. No one will know if \[X\] downloads the book on her computer. Is it okay or not okay for \[X\] to download the book on her computer? How okay or not okay is it?” In the physical version, the story is identical except that the item is shown as a physical object (e.g., "\[X\] finds that a book was left next to a shared computer in the room. \[X\] is the only person in the room. No one will know if \[X\] puts the book in her bag. Is it okay or not okay for \[X\] to put the book in her bag? How okay or not okay is it?”). In the original study, stimuli were presented and randomized by Qualtrics; in this study, stimuli will be presented and randomized via a web-based JsPsych experiment.
 
-I will also add in two additional new vignettes that will be similarly counterbalanced for format and randomly presented (so participants in this study will see 8 vignettes in total). These new items will be a photograph of a preschool-age child and a photograph of an adult (to probe ideas of digital privacy for children versus adults). These will be presented at the end of the procedure for all participants.
+I will also add in two additional new vignettes that will be similarly counterbalanced for format and randomly presented after the original 6 vignettes (so participants in this study will see 8 vignettes in total). These new items will be a photograph of a child and a photograph of an adult (to probe ideas of digital privacy for children versus adults). These will be presented at the end of the procedure for all participants.
 
 ### Procedure
 
 <!-- Can quote directly from original article - just put the text in quotations and note that this was followed precisely. Or, quote directly and just point out exceptions to what was described in the original article. -->
 
-After providing informed consent, participants will see eight stories presented in random order. After reading each story, they will rate how okay or not okay the action was on a 5-point Likert scale with corresponding thumbs up/thumbs down images ("from -2 being totally not okay to +2 being totally okay"). They will also answer an open-ended question explaining each of their answers (“What made you think so? Describe your reason below.”).
+After providing informed consent, participants will see six stories presented in random order, followed by an additional two stories (8 total). After reading each story, they will rate how okay or not okay the action was on a 5-point Likert scale with corresponding thumbs up/thumbs down images ("from -2 being totally not okay to +2 being totally okay"). They will also answer an open-ended question explaining each of their answers (“What made you think so? Describe your reason below.”).
+
+The full experiment can be accessed at: <https://mikkahoffman.github.io/lee2022/>
 
 ### Analysis Plan
 
