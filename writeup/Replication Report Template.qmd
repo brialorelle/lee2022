@@ -56,7 +56,7 @@ I will also add in two additional new vignettes that will be similarly counterba
 
 <!-- Can quote directly from original article - just put the text in quotations and note that this was followed precisely. Or, quote directly and just point out exceptions to what was described in the original article. -->
 
-After providing informed consent, participants will see six stories presented in random order, followed by an additional two stories (8 total). After reading each story, they will rate how okay or not okay the action was on a 5-point Likert scale with corresponding thumbs up/thumbs down images ("from -2 being totally not okay to +2 being totally okay"). They will also answer an open-ended question explaining each of their answers (“What made you think so? Describe your reason below.”).
+After providing informed consent, participants will see six stories presented in random order, followed by an additional two stories (8 total). After reading each story, they will rate how okay or not okay the action was on a 5-point Likert scale ("from -2 being totally not okay to +2 being totally okay"). They will also answer an open-ended question explaining each of their answers (“What made you think so? Describe your reason below.”).
 
 The full experiment can be accessed at: <https://mikkahoffman.github.io/lee2022/>
 
@@ -86,7 +86,7 @@ Differences in sample: The original sample was collected from adults ("M = 37.7 
 
 Differences in procedure: The original experiment was presented, randomized, and collected via Qualtrics. In this study, I will present, randomize, and collect data via a JsPsych experiment that I code. While I do not anticipate this creating meaningful differences in participants' experiences, there may be differences in things such as font size, scale presentation, etc. An additional difference is that participants will see two new vignettes following the original procedure.
 
-Differences in analysis plan: Although I am following the analysis plan laid out in the original study, it is possible that this analysis plan will introduce differences in my data. Specifically, as the original study was collected before generative AI tools were widely used, they did not account for screening out potentially AI generated answers in their data cleaning. By using their methods, I similarly will not be screening out potential AI answers - this could introduce poor-quality data into my sample. However, I think that potential AI data is less likely to be present on SONA, so I feel comfortable not including robust AI checks in my procedure.
+Differences in analysis plan: Although I am following the analysis plan laid out in the original study, it is possible that this analysis plan will introduce differences in my data. Specifically, as the original study was collected before generative AI tools were widely used, they did not account for screening out potentially AI generated answers in their data cleaning. By using their methods, I similarly will not be screening out potential AI answers - this could introduce poor-quality data into my sample. However, I think that potential AI data is less likely to be present on SONA, so I feel comfortable not including robust AI checks in my procedure. I also will not be excluding participants on the basis of their IP addresses not being based in the U.S., as this is not a huge concern when pulling from a UCSD undergraduate participant pool. 
 
 ### Methods Addendum (Post Data Collection)
 
@@ -110,15 +110,20 @@ Data preparation following the analysis plan.
 ### Data Preparation
 
 #### Load Relevant Libraries and Functions
-#library(data.table)
-#library(lme4)
-#library(glmmTMB)
+library(tidyverse)
+library(data.table)
+library(lme4)
+library(glmmTMB)
+library(readr)
 
-#### Import data
-# data <- read.csv(file = "data.csv", header = TRUE) # import full data
+#### Import all data
+#### get a vector of all csv file paths in data folder
+# files <- list.files(path = "/Users/m5hoffman/Documents/GitHub/lee2022/data", pattern = "\\.csv$", full.names = TRUE)
+#### read and combine into one dataframe)
+# data <- read_csv(files)
 
 #### Data exclusion / filtering
-#exclude participants who did not rate all scenarios or who are not US based 
+#exclude participants who did not rate all scenarios
   
 #### Prepare data for analysis - create columns etc.
 # create one data frame for ratings, selecting only subject ID, item, format.type, and response with 6 original vignettes, and one with all 8 vignettes
