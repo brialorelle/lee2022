@@ -29,8 +29,15 @@
           }
         }
       }
-    ]
+    ],
+    //redirect to SONA on finish
+    on_finish: function(){
+    window.location = "https://ucsd.sona-systems.com/webstudy_credit.aspx?experiment_id=3177&credit_token=cc7f42facbb7431191ebe7f526e7f220&survey_code="+id;
+  }
   });
+
+  //get SONA ID
+var id = jsPsych.data.getURLVariable('id');
 
   // give each participant a random ID. Their data file is named after it.
   var subject_id = jsPsych.randomization.randomID(10);
@@ -56,7 +63,7 @@ var consent = {
   };
   timeline.push(consent);
 
-  // Define an exit node if they choose 'I do not agree'
+  // Define an exit node if they choose 'I do not agree' (claude helped here)
 var exit_node = {
   timeline: [{
     type: jsPsychHtmlKeyboardResponse,
@@ -75,15 +82,6 @@ var exit_node = {
   }
 };
 timeline.push(exit_node);
-
-//collet SONA ID
-var sona_id = {
-  type: jsPsychSurveyText,
-  questions: [
-    {prompt: 'Please enter your SONA ID:', name: 'sona_id', required: true}
-  ]
-};
-timeline.push(sona_id);
 
   // define the instructions trial (needs to be edited)
   var instructions = {
@@ -121,20 +119,20 @@ var question_items = [
     condition_6: ['book_nondigital','movie_nondigital','photo_digital','drawing_digital','game_nondigital','music_digital']
   };
 
- //assign a condition randomly
+ //assign a condition randomly (claude helped here)
  var condition_assignment = jsPsych.randomization.sampleWithoutReplacement(Object.keys(conditions), 1)[0];
   console.log(condition_assignment);
   jsPsych.data.addProperties({ subject_id: subject_id, condition: condition_assignment });
 
 
-  // look up this participant's 6 items, then randomize their order
+  // look up this participant's 6 items, then randomize their order (claude helped here)
   var shuffledQuestions = jsPsych.randomization.shuffle(
     conditions[condition_assignment].map(function (id) {
       return question_items.find(function (q) { return q.id === id; });
     })
   );
 
-  // build one trial per item
+  // build one trial per item (claude helped here)
   var trials = shuffledQuestions.map(function (item) {
     return {
       type: jsPsychSurveyHtmlForm,
