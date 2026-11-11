@@ -50,6 +50,7 @@ var id = jsPsych.data.getURLVariable('id');
   // define consent form block 
 var consent = {
     type: jsPsychHtmlButtonResponse,
+    data: { item_id: 'consent' },
     stimulus: `
     <div style="max-width: 600px; margin: 0 auto; text-align: left;">
       <h2>Consent for Participation in a Research Study</h2>
@@ -162,15 +163,15 @@ var question_items = [
           .likert-label { font-size: 14px; text-align: center; line-height: 1.2; }
         </style>
         <div class="likert-container">
-          <label class="likert-option"><input type="radio" name="okayness" value="-2" required /><span class="likert-label">Totally not okay</span></label>
-          <label class="likert-option"><input type="radio" name="okayness" value="-1" required /><span class="likert-label">Not okay</span></label>
-          <label class="likert-option"><input type="radio" name="okayness" value="0" required /><span class="likert-label">Neutral</span></label>
-          <label class="likert-option"><input type="radio" name="okayness" value="1" required /><span class="likert-label">Okay</span></label>
-          <label class="likert-option"><input type="radio" name="okayness" value="2" required /><span class="likert-label">Totally okay</span></label>
+          <label class="likert-option"><input type="radio" name="okayness" value="-2"  /><span class="likert-label">Totally not okay</span></label>
+          <label class="likert-option"><input type="radio" name="okayness" value="-1"  /><span class="likert-label">Not okay</span></label>
+          <label class="likert-option"><input type="radio" name="okayness" value="0"  /><span class="likert-label">Neutral</span></label>
+          <label class="likert-option"><input type="radio" name="okayness" value="1"  /><span class="likert-label">Okay</span></label>
+          <label class="likert-option"><input type="radio" name="okayness" value="2"  /><span class="likert-label">Totally okay</span></label>
         </div>
         <div>
           <label for="open_response">What made you think so? Describe your reason below.</label><br>
-          <textarea id="open_response" name="open_response" rows="3" cols="40" required></textarea>
+          <textarea id="open_response" name="open_response" rows="3" cols="40" ></textarea>
         </div>`,
       button_label: 'Next',
       on_finish: function(data) {
@@ -183,6 +184,39 @@ var question_items = [
 
   timeline.push(...trials);
 
+  //attention check
+  var attention_check = {
+    type: jsPsychSurveyHtmlForm,
+    data: { item_id: 'attention_check' },
+    preamble: `
+      <style>
+        .preamble { font-size: 18px; line-height: 1.5; text-align: center;
+                    max-width: 100%; margin: 40px auto; padding: 20px; }
+      </style>
+      <div class="preamble"><p>To make sure you are paying attention, please select "Okay" for this question.</p></div>`,
+    html: `
+      <style>
+        .likert-container { display: flex; justify-content: space-between; align-items: center;
+                            max-width: 600px; margin: 30px auto; }
+        .likert-option { display: flex; flex-direction: column; align-items: center;
+                         cursor: pointer; width: 80px; }
+        .likert-option input { margin-bottom: 8px; cursor: pointer; }
+        .likert-label { font-size: 14px; text-align: center; line-height: 1.2; }
+      </style>
+      <div class="likert-container">
+        <label class="likert-option"><input type="radio" name="attention_check" value="-2"  /><span class="likert-label">Totally not okay</span></label>
+        <label class="likert-option"><input type="radio" name="attention_check" value="-1"  /><span class="likert-label">Not okay</span></label>
+        <label class="likert-option"><input type="radio" name="attention_check" value="0"  /><span class="likert-label">Neutral</span></label>
+        <label class="likert-option"><input type="radio" name="attention_check" value="1"  /><span class="likert-label">Okay</span></label>
+        <label class="likert-option"><input type="radio" name="attention_check" value="2"  /><span class="likert-label">Totally okay</span></label>
+      </div>`,
+    button_label: 'Next',
+    on_finish: function(data) {
+      data.attention_check_response = data.response.attention_check;
+    }
+  };
+  timeline.push(attention_check);
+  
   //add in exploratory vignettes - randomize order of the four new vignettes (2 digital, 2 nondigital, counterbalance)
   var exploratory_stimuli = [
     { id: 'kidphoto_digital', prompt: '<p>Theo finds that a photo of a child was saved on a shared computer in the room.<br>Theo is the only person in the room.<br>No one will know if Theo downloads the photo on his laptop.<br><br>Is it okay or not okay for Theo to download the photo?<br>How okay or not okay is it?</p>' },
@@ -235,15 +269,15 @@ var question_items = [
           .likert-label { font-size: 14px; text-align: center; line-height: 1.2; }
         </style>
         <div class="likert-container">
-          <label class="likert-option"><input type="radio" name="okayness" value="-2" required /><span class="likert-label">Totally not okay</span></label>
-          <label class="likert-option"><input type="radio" name="okayness" value="-1" required /><span class="likert-label">Not okay</span></label>
-          <label class="likert-option"><input type="radio" name="okayness" value="0" required /><span class="likert-label">Neutral</span></label>
-          <label class="likert-option"><input type="radio" name="okayness" value="1" required /><span class="likert-label">Okay</span></label>
-          <label class="likert-option"><input type="radio" name="okayness" value="2" required /><span class="likert-label">Totally okay</span></label>
+          <label class="likert-option"><input type="radio" name="okayness" value="-2"  /><span class="likert-label">Totally not okay</span></label>
+          <label class="likert-option"><input type="radio" name="okayness" value="-1"  /><span class="likert-label">Not okay</span></label>
+          <label class="likert-option"><input type="radio" name="okayness" value="0"  /><span class="likert-label">Neutral</span></label>
+          <label class="likert-option"><input type="radio" name="okayness" value="1"  /><span class="likert-label">Okay</span></label>
+          <label class="likert-option"><input type="radio" name="okayness" value="2"  /><span class="likert-label">Totally okay</span></label>
         </div>
         <div>
           <label for="open_response">What made you think so? Describe your reason below.</label><br>
-          <textarea id="open_response" name="open_response" rows="3" cols="40" required></textarea>
+          <textarea id="open_response" name="open_response" rows="3" cols="40" ></textarea>
         </div>`,
       button_label: 'Next',
       on_finish: function(data) {
@@ -255,6 +289,30 @@ var question_items = [
 });
 
   timeline.push(exploratory_trials);
+
+  // AI honesty check
+  var honesty_check = {
+    type: jsPsychSurveyHtmlForm,
+    data: { item_id: 'honesty_check' },
+    preamble: `
+      <style>
+        .preamble { font-size: 18px; line-height: 1.5; text-align: center;
+                    max-width: 100%; margin: 40px auto; padding: 20px; }
+      </style>
+      <div class="preamble"><p>We want to make sure that you are answering honestly. Please answer the following question truthfully. Your answer will not impact your ability to receive credit for this study.</p></div>`,
+    html: `
+      <label for="honesty_response">Did you use AI tools (like ChatGPT) to help you answer questions in this study at any point?</label><br>
+      <select id="honesty_response" name="honesty_response">
+        <option value="">Select an option</option>
+        <option value="yes">Yes</option>
+        <option value="no">No</option>
+      </select>`,
+    button_label: 'Next',
+    on_finish: function(data) {
+      data.honesty_response = data.response.honesty_response;
+    }
+  };
+  timeline.push(honesty_check);
 
   // define debrief trial
   var debrief = {
