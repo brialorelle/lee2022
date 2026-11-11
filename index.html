@@ -16,9 +16,11 @@
 <body></body>
 <script>
 
+// This code is written by Mikka Hoffman with assistance from Claude (Sonnet 5.5) and Gemini (via Google search). Code has also been adapted from tutorials by Bria Long and Martin Zettersten. 
+
   // initialize jsPsych
   var jsPsych = initJsPsych({
-    // send the data to DataPipe
+    // send the data to DataPipe - copied from Bria Long's tutorial
     extensions: [
       {
         type: jsPsychExtensionPipe,
@@ -45,7 +47,7 @@ var id = jsPsych.data.getURLVariable('id');
   // create timeline
   var timeline = [];
 
-  // define consent form block
+  // define consent form block 
 var consent = {
     type: jsPsychHtmlButtonResponse,
     stimulus: `
@@ -63,7 +65,7 @@ var consent = {
   };
   timeline.push(consent);
 
-  // Define an exit node if they choose 'I do not agree' (claude helped here)
+  // Define an exit node if they choose 'I do not agree' (suggested by Gemini)
 var exit_node = {
   timeline: [{
     type: jsPsychHtmlKeyboardResponse,
@@ -83,7 +85,7 @@ var exit_node = {
 };
 timeline.push(exit_node);
 
-  // define the instructions trial (needs to be edited)
+  // define the instructions trial
   var instructions = {
     type: jsPsychHtmlKeyboardResponse,
     stimulus: `
@@ -119,11 +121,14 @@ var question_items = [
     condition_6: ['book_nondigital','movie_nondigital','photo_digital','drawing_digital','game_nondigital','music_digital']
   };
 
- //assign a condition randomly (claude helped here)
+ // Assistance came from Claude (Sonnet 5.5) to help with condition definition, assignment, and randomization using the prompt "I'm trying to build a jspsych experiment that has 12 items - each participant sees 6 items using a pre-determined counterbalancing scheme. Those 6 items are randomly presented. This is what I have so far. Tell me why it isn't working and how to fix it to match my goals"
+ // only some suggestions were implemented, including the condition assignment, randomization and trial presentation below. This code was also repurposed for the experimental vignette trials. 
+ 
+
+ //assign a condition randomly
  var condition_assignment = jsPsych.randomization.sampleWithoutReplacement(Object.keys(conditions), 1)[0];
   console.log(condition_assignment);
   jsPsych.data.addProperties({ subject_id: subject_id, condition: condition_assignment });
-
 
   // look up this participant's 6 items, then randomize their order (claude helped here)
   var shuffledQuestions = jsPsych.randomization.shuffle(
