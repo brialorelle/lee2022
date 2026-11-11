@@ -84,9 +84,9 @@ Additional analyses: I will also conduct follow-up one-sample t-tests (two-taile
 
 Differences in sample: The original sample was collected from adults ("M = 37.7 years, range = 24–66; 23 female and 37 male") on Amazon Mechanical Turk in 2019. This sample will be collected from undergraduate adults in 2026. Likely these samples will be different, as the age range of my sample will likely be narrower and younger, and there may be generational differences between these two samples. Their experiences with technology may be different, potentially leading to differences in their responses.
 
-Differences in procedure: The original experiment was presented, randomized, and collected via Qualtrics. In this study, I will present, randomize, and collect data via a JsPsych experiment that I code. While I do not anticipate this creating meaningful differences in participants' experiences, there may be differences in things such as font size, scale presentation, etc. An additional difference is that participants will see two new vignettes following the original procedure.
+Differences in procedure: The original experiment was presented, randomized, and collected via Qualtrics. In this study, I will present, randomize, and collect data via a JsPsych experiment that I code. While I do not anticipate this creating meaningful differences in participants' experiences, there may be differences in things such as font size, scale presentation, etc. An additional difference is that participants will see two new vignettes following the original procedure. Furthermore, I have added in an attention check question and an AI honesty check that were not included in the original procedure, 
 
-Differences in analysis plan: Although I am following the analysis plan laid out in the original study, it is possible that this analysis plan will introduce differences in my data. Specifically, as the original study was collected before generative AI tools were widely used, they did not account for screening out potentially AI generated answers in their data cleaning. By using their methods, I similarly will not be screening out potential AI answers - this could introduce poor-quality data into my sample. However, I think that potential AI data is less likely to be present on SONA, so I feel comfortable not including robust AI checks in my procedure. I also will not be excluding participants on the basis of their IP addresses not being based in the U.S., as this is not a huge concern when pulling from a UCSD undergraduate participant pool. 
+Differences in analysis plan: As the original study was collected before generative AI tools were widely used, they did not account for screening out potentially AI generated answers in their data cleaning. By using their methods, I would similarly  not be screening out potential AI answers - this could introduce poor-quality data into my sample. I have thus added in both an attention check question and an AI honesty question, and will exclude participants who do not pass either. I also will not be excluding participants on the basis of their IP addresses not being based in the U.S., as this is not a huge concern when pulling from a UCSD undergraduate participant pool. 
 
 ### Methods Addendum (Post Data Collection)
 
@@ -118,17 +118,46 @@ library(readr)
 
 #### Import all data
 #### get a vector of all csv file paths in data folder
-# files <- list.files(path = "/Users/m5hoffman/Documents/GitHub/lee2022/data", pattern = "\\.csv$", full.names = TRUE)
+ files <- list.files(path = "/Users/m5hoffman/Documents/GitHub/lee2022/data/pilot_a_data", pattern = "\\.csv$", full.names = TRUE)
 #### read and combine into one dataframe
-# data <- read_csv(files)
+ data <- read_csv(files)
+ 
+ #maybe check how many participants were in each condition/responses for each item here and visualize data
+hist(data$rating)
+table(data$item_id)
+table(data$condition)
+
+# check for attention check, AI check answers, and participants who didn't rate all scenarios and exclude those who didn't pass
+participant_exclusions_incomplete <- data |> 
+   filter(is.na(item)) |>   #filter only for rating trials
+   filter(is.na(rating)) #identifies participants that did not complete a trial - these participants will then be excluded 
+participant_exclusions_checks <- data |> #identify participants that did not answer correctly to the attention check or that did not say no to having used AI - exclude these subject_ids
+  filter(attention_check_response != 1) |> 
+  filter(honesty_response != "no")
+  
+
+#### tidy up dataframe - select only relevant columns and responses
+ data <- data |> 
+   select(subject_id, item, format_type, rating, justification) #select only relevant variables
 
 #### Data exclusion / filtering
 #exclude participants who did not rate all scenarios
-  
-#### Prepare data for analysis - create columns etc.
-# create one data frame for ratings, selecting only subject ID, item, format.type, and response with 6 original vignettes, and one with all 8 vignettes
+ participant_exclusions <- data |> 
+   filter(is.na(rating)) #identifies participants that did not complete a trial - these participants will then be excluded
+ 
+#### Prepare data for analysis
+# create one data frame for ratings with 6 original vignettes, and one with all 8 vignettes
+ 
+data_replication <- data |> 
+  filter(item!="kidphoto",
+         item!="adultphoto") |> 
+  select(-justification)
+
+data_exploratory <- data |> 
+  select(-justification)
 
 # create another data frame for justifications, including subject ID, format, item, category, answer, and code
+# import data after hand coding
 ```
 
 ### Confirmatory analysis
@@ -138,22 +167,24 @@ library(readr)
 Copied from original paper's analyses:
 
 ```{r}
-#doca.adult.full <- lmer(response ~ format.type*item + (1|subjectid),  
-#                        data = doca.adult, REML=FALSE, na.action=na.omit)
+doca.adult.full <- lmer(rating ~ format_type*item + (1|subject_id),  
+                        data = data_replication, REML=FALSE, na.action=na.omit) #full model testing main effects and interaction of format type and item type on rating, with subject id as a random effect 
 
-#doca.adult.null <- lmer(response ~ (1|subjectid), data = doca.adult, REML=FALSE, na.action=na.omit)
-#  anova(doca.adult.full, doca.adult.null)
-#  drop1(doca.adult.full, test="Chisq")
+doca.adult.null <- lmer(rating ~ (1|subject_id), data = data_replication, REML=FALSE, na.action=na.omit) #null model with only participant id as a random effect
+  anova(doca.adult.full, doca.adult.null) #likelihood ratio test
+  drop1(doca.adult.full, test="Chisq")
   
-#doca.adult.m1 <- update(doca.adult.full, ~ . -format.type:item)
-#  anova(doca.adult.full, doca.adult.m1)
-#  drop1(doca.adult.m1, test="Chisq")
+#If the full model provided a significantly better fit to the data than the null model, we then conducted hypothesis-driven tests to examine the role of individual predictors by sequentially dropping them from the full model and assessed changes in model fit using likelihood ratio tests (LRTs).  
   
-#doca.adult.m2 <- update(doca.adult.full, ~ . -format.type:item -item)
-#  anova(doca.adult.m2, doca.adult.m1) 
-#  drop1(doca.adult.m2, test="Chisq")
+doca.adult.m1 <- update(doca.adult.full, ~ . -format_type:item)
+  anova(doca.adult.full, doca.adult.m1)
+  drop1(doca.adult.m1, test="Chisq")
   
-#  summary(doca.adult.m2) ## final model
+doca.adult.m2 <- update(doca.adult.full, ~ . -format_type:item -item)
+  anova(doca.adult.m2, doca.adult.m1) 
+  drop1(doca.adult.m2, test="Chisq")
+  
+  summary(doca.adult.m2) ## final model
 ```
 
 *Side-by-side graph with original graph is ideal here*
@@ -164,11 +195,20 @@ Any follow-up analyses desired (not required).
 
 ```{r}
 # do ratings differ from neutral? 
-#doca.adult.digital <- subset(doca.adult, format.type == "Digital")
-#doca.adult.nondigital <- subset(doca.adult, format.type == "Non-digital")
+doca.adult.digital <- subset(data_replication, format_type == "digital")
+doca.adult.nondigital <- subset(data_replication, format_type == "nondigital")
 
-#t.test(doca.adult.digital$response, mu=0)
-#t.test(doca.adult.nondigital$response, mu=0)
+t.test(doca.adult.digital$rating, mu=0)
+t.test(doca.adult.nondigital$rating, mu=0)
+
+#effect size for non digital when summarizing per subject (replicating how I calculated effect size for the power analysis)
+test <- doca.adult.nondigital %>%
+  group_by(subject_id) %>%
+  summarize(per_subject_rating = mean(rating))
+
+hist(test$per_subject_rating)
+t.test(test$per_subject_rating, mu=0)
+cohens_d(test$per_subject_rating, mu=0)
 ```
 
 ```{r}
