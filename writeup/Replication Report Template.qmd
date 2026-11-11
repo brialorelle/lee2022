@@ -115,25 +115,26 @@ library(data.table)
 library(lme4)
 library(glmmTMB)
 library(readr)
+library(effectsize)
 
 #### Import all data
 #### get a vector of all csv file paths in data folder
- files <- list.files(path = "/Users/m5hoffman/Documents/GitHub/lee2022/data/pilot_a_data", pattern = "\\.csv$", full.names = TRUE)
+ files <- list.files(path = "/Users/m5hoffman/Documents/GitHub/lee2022/data/raw/pilot_a_data", pattern = "\\.csv$", full.names = TRUE)
 #### read and combine into one dataframe
  data <- read_csv(files)
  
  #maybe check how many participants were in each condition/responses for each item here and visualize data
-hist(data$rating)
-table(data$item_id)
-table(data$condition)
+# hist(data$rating)
+# table(data$item_id)
+# table(data$condition)
 
 # check for attention check, AI check answers, and participants who didn't rate all scenarios and exclude those who didn't pass
-participant_exclusions_incomplete <- data |> 
-   filter(is.na(item)) |>   #filter only for rating trials
-   filter(is.na(rating)) #identifies participants that did not complete a trial - these participants will then be excluded 
-participant_exclusions_checks <- data |> #identify participants that did not answer correctly to the attention check or that did not say no to having used AI - exclude these subject_ids
-  filter(attention_check_response != 1) |> 
-  filter(honesty_response != "no")
+# participant_exclusions_incomplete <- data |> 
+  # filter(is.na(item)) |>   #filter only for rating trials
+  # filter(is.na(rating)) #identifies participants that did not complete a trial - these participants will then be excluded 
+# participant_exclusions_checks <- data |> #identify participants that did not answer correctly to the attention check or that did not say no to having used AI - exclude these subject_ids
+#  filter(attention_check_response != 1) |> 
+#  filter(honesty_response != "no")
   
 
 #### tidy up dataframe - select only relevant columns and responses
