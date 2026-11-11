@@ -1,0 +1,18 @@
+variable,type,possible_values,explanation
+item_id,string,<item description>,"description of the item (e.g., consent, movie_nondigital)"
+rt,double,>0,response time (ms)
+stimulus,string,<text shown>,question text (does not appear for all questions)
+response,string,{participant's complete response to that item_id},full participant response
+trial_type,string,html-button-response; html-keyboard-response; 	survey-html-form,trial format
+trial_index,double,"0, 2-13",question number
+plugin_version,string,2.0.0,plugin version (jspsych)
+time_elapsed,double,>0,time elapsed since start (ms)
+subject_id,string,<unique 10 characters>,randomly assigned participant id
+condition,string,"condition_1, condition_2...condition_6",counterbalancing condition (1-6)
+expl_condition,string,"expl_condition_1, expl_condition_2",exploratory condition (1-2)
+format_type,string,"digital, nondigital",digital or nondigital format presented
+item,string,"book, drawing, music, game, photo, movie, kidphoto, adultphoto",item presented
+rating,double,"-2 (totally not okay), -1, 0, 1, 2 (totally okay)",participant's rating on the likert scale
+justification,string,open response,participant's open response justification
+attention_check_response,double,"-2 , -1, 0, 1 (correct), 2 ",attention check response (1 is correct)
+honesty_response,string,"yes, no (did not use AI)",AI honesty check response
