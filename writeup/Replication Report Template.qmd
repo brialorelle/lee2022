@@ -33,6 +33,7 @@ Link to repository: <https://github.com/mikkahoffman/lee2022.git> Link to paper:
 ### Power Analysis
 
 At the instructors' recommendation, I calculated the original effect size for the one-sampled t-test comparing adult non-digital ratings to a neutral valence of 0. The calculated effect size was d = -1.64 (95% CI \[-2.03, -1.25\]). Using this effect size, I calculated that original experiment had 100% power. I thus decided to use the original sample size of N=60 for my replication.
+
 ```{r}
 library(pwr)
 pwr.t.test(d = -1.64, n = 60, type = "one.sample")$power
@@ -48,7 +49,7 @@ The planned sample size is 60 adult participants. As the sample will be collecte
 
 <!--All materials - can quote directly from original article - just put the text in quotations and note that this was followed precisely. Or, quote directly and just point out exceptions to what was described in the original article. -->
 
-"Adults read six scenarios in total (music, movie, book, photo of nature, drawing, and game) in orders randomized by Qualtrics, with three items presented in a digital format and the other three items presented in a physical format. In addition, the types of items shown in a digital versus physical format were counterbalanced." For example, for digital format scenarios, participants will read, "\[X\] finds that a book was saved on a shared computer in the room. \[X\] is the only person in the room. No one will know if \[X\] downloads the book on her computer. Is it okay or not okay for \[X\] to download the book on her computer? How okay or not okay is it?” In the physical version, the story is identical except that the item is shown as a physical object (e.g., "\[X\] finds that a book was left next to a shared computer in the room. \[X\] is the only person in the room. No one will know if \[X\] puts the book in her bag. Is it okay or not okay for \[X\] to put the book in her bag? How okay or not okay is it?”). In the original study, stimuli were presented and randomized by Qualtrics; in this study, stimuli will be presented and randomized via a web-based JsPsych experiment. Exact vignette text will be copied directly from the author-provided study materials. 
+"Adults read six scenarios in total (music, movie, book, photo of nature, drawing, and game) in orders randomized by Qualtrics, with three items presented in a digital format and the other three items presented in a physical format. In addition, the types of items shown in a digital versus physical format were counterbalanced." For example, for digital format scenarios, participants will read, "\[X\] finds that a book was saved on a shared computer in the room. \[X\] is the only person in the room. No one will know if \[X\] downloads the book on her computer. Is it okay or not okay for \[X\] to download the book on her computer? How okay or not okay is it?” In the physical version, the story is identical except that the item is shown as a physical object (e.g., "\[X\] finds that a book was left next to a shared computer in the room. \[X\] is the only person in the room. No one will know if \[X\] puts the book in her bag. Is it okay or not okay for \[X\] to put the book in her bag? How okay or not okay is it?”). In the original study, stimuli were presented and randomized by Qualtrics; in this study, stimuli will be presented and randomized via a web-based JsPsych experiment. Exact vignette text will be copied directly from the author-provided study materials.
 
 I will also add in two additional new vignettes that will be similarly counterbalanced for format and randomly presented after the original 6 vignettes (so participants in this study will see 8 vignettes in total). These new items will be a photograph of a child and a photograph of an adult (to probe ideas of digital privacy for children versus adults). These will be presented at the end of the procedure for all participants.
 
@@ -84,9 +85,9 @@ Additional analyses: I will also conduct follow-up one-sample t-tests (two-taile
 
 Differences in sample: The original sample was collected from adults ("M = 37.7 years, range = 24–66; 23 female and 37 male") on Amazon Mechanical Turk in 2019. This sample will be collected from undergraduate adults in 2026. Likely these samples will be different, as the age range of my sample will likely be narrower and younger, and there may be generational differences between these two samples. Their experiences with technology may be different, potentially leading to differences in their responses.
 
-Differences in procedure: The original experiment was presented, randomized, and collected via Qualtrics. In this study, I will present, randomize, and collect data via a JsPsych experiment that I code. While I do not anticipate this creating meaningful differences in participants' experiences, there may be differences in things such as font size, scale presentation, etc. An additional difference is that participants will see two new vignettes following the original procedure. Furthermore, I have added in an attention check question and an AI honesty check that were not included in the original procedure, 
+Differences in procedure: The original experiment was presented, randomized, and collected via Qualtrics. In this study, I will present, randomize, and collect data via a JsPsych experiment that I code. While I do not anticipate this creating meaningful differences in participants' experiences, there may be differences in things such as font size, scale presentation, etc. An additional difference is that participants will see two new vignettes following the original procedure. Furthermore, I have added in an attention check question and an AI honesty check that were not included in the original procedure,
 
-Differences in analysis plan: As the original study was collected before generative AI tools were widely used, they did not account for screening out potentially AI generated answers in their data cleaning. By using their methods, I would similarly  not be screening out potential AI answers - this could introduce poor-quality data into my sample. I have thus added in both an attention check question and an AI honesty question, and will exclude participants who do not pass either. I also will not be excluding participants on the basis of their IP addresses not being based in the U.S., as this is not a huge concern when pulling from a UCSD undergraduate participant pool. 
+Differences in analysis plan: As the original study was collected before generative AI tools were widely used, they did not account for screening out potentially AI generated answers in their data cleaning. By using their methods, I would similarly not be screening out potential AI answers - this could introduce poor-quality data into my sample. I have thus added in both an attention check question and an AI honesty question, and will exclude participants who do not pass either. I also will not be excluding participants on the basis of their IP addresses not being based in the U.S., as this is not a huge concern when pulling from a UCSD undergraduate participant pool.
 
 ### Methods Addendum (Post Data Collection)
 
@@ -188,7 +189,25 @@ doca.adult.m2 <- update(doca.adult.full, ~ . -format_type:item -item)
   summary(doca.adult.m2) ## final model
 ```
 
-*Side-by-side graph with original graph is ideal here*
+*Side-by-side graph with original graph is ideal here* 
+
+```{r}
+library(tidyboot)
+data_replication_summary <- data_replication |> 
+  group_by(format_type) |>
+  tidyboot::tidyboot_mean(column = rating)
+
+ggplot(data = data_replication_summary, aes(x=format_type, y=mean))+
+  geom_col(aes(fill=format_type))+
+  geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper)) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  ylim(-2, 2)+
+  theme_classic()+
+  theme(legend.position = "none")+
+  labs(x="Format Type", y="Rating", title = "Evaluations in Adults")
+
+#insert original figure
+```
 
 ### Exploratory analyses
 
