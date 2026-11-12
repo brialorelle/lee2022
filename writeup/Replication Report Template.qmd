@@ -201,15 +201,6 @@ doca.adult.nondigital <- subset(data_replication, format_type == "nondigital")
 
 t.test(doca.adult.digital$rating, mu=0)
 t.test(doca.adult.nondigital$rating, mu=0)
-
-#effect size for non digital when summarizing per subject (replicating how I calculated effect size for the power analysis)
-test <- doca.adult.nondigital %>%
-  group_by(subject_id) %>%
-  summarize(per_subject_rating = mean(rating))
-
-hist(test$per_subject_rating)
-t.test(test$per_subject_rating, mu=0)
-cohens_d(test$per_subject_rating, mu=0)
 ```
 
 ```{r}
