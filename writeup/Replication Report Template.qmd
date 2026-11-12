@@ -123,29 +123,29 @@ library(effectsize)
 #### read and combine into one dataframe
  data <- read_csv(files)
  
- #maybe check how many participants were in each condition/responses for each item here and visualize data
-# hist(data$rating)
-# table(data$item_id)
-# table(data$condition)
+ # check how many participants were in each condition/responses for each item here and visualize data
+ hist(data$rating)
+ table(data$item_id) 
+ table(data$condition)
+ 
+ #### Data exclusion / filtering
 
 # check for attention check, AI check answers, and participants who didn't rate all scenarios and exclude those who didn't pass
-# participant_exclusions_incomplete <- data |> 
-  # filter(is.na(item)) |>   #filter only for rating trials
-  # filter(is.na(rating)) #identifies participants that did not complete a trial - these participants will then be excluded 
-# participant_exclusions_checks <- data |> #identify participants that did not answer correctly to the attention check or that did not say no to having used AI - exclude these subject_ids
-#  filter(attention_check_response != 1) |> 
-#  filter(honesty_response != "no")
-  
+ participant_exclusions_incomplete <- data |> 
+   filter(!is.na(item)) |>   #filter only for item rating trials
+   filter(is.na(rating)) #identifies participants that did not complete a trial - these participants will then be excluded 
+ participant_exclusions_checks <- data |> #identify participants that did not answer correctly to the attention check or that did not say no to having used AI - exclude these subject_ids
+  filter(item_id == "attention_check" | item_id == "honesty_check")
+ participant_exclusions_checks <- participant_exclusions_checks |> 
+  filter(attention_check_response != 1 | honesty_response != "no")
+
+ data <- data |> 
+   filter(subject_id != "wlrt2r0w0r") #exclude the participant that failed checks
 
 #### tidy up dataframe - select only relevant columns and responses
  data <- data |> 
-   select(subject_id, item, format_type, rating, justification) #select only relevant variables
-
-#### Data exclusion / filtering
-#exclude participants who did not rate all scenarios
- participant_exclusions <- data |> 
-   filter(is.na(rating)) #identifies participants that did not complete a trial - these participants will then be excluded
- 
+   select(subject_id, item_id, item, format_type, rating, justification) |> #select only relevant variables
+    filter(!is.na(rating)) 
 #### Prepare data for analysis
 # create one data frame for ratings with 6 original vignettes, and one with all 8 vignettes
  
